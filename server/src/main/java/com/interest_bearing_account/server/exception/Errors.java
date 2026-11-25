@@ -34,6 +34,6 @@ public class Errors {
                 .body(new ErrorBody(
                         "OPERACAO_INDISPONIVEL",
                         "Não foi possível concluir a operação. " +
-                                " Atualize o saldo antes de tentar novamente."));
+                                  "Atualize o saldo antes de tentar novamente."));
     }
 }
