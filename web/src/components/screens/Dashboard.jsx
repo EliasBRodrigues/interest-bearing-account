@@ -8,7 +8,7 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
     <>
       <header className="topbar">
         <div className="container header-inner">
-          <a className="brand light" href="/" aria-label="Rende, início">
+          <a className="brand light" href="/">
             Conta Remunerada
           </a>
           <div className="header-right">
@@ -80,9 +80,6 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
           <div className="statement-heading">
             <div>
               <h2 id="statement-title">Extrato da conta</h2>
-              <p className="muted">
-                Cada depósito, saque e rendimento em um só lugar.
-              </p>
             </div>
           </div>
           <div className="statement-foot">
@@ -94,7 +91,6 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
         </section>
         <footer className="dashboard-footer">
           <span>Conta remunerada</span>
-          <span>Juros diários conforme a taxa vigente no fechamento.</span>
         </footer>
       </main>
     </>
