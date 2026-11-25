@@ -10,16 +10,20 @@ export default function AuthForm({ onLogin, notice }) {
     [number, setNumber] = useState(""),
     [owner, setOwner] = useState(""),
     [password, setPassword] = useState("");
+
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(""),
     [created, setCreated] = useState("");
+  
   const guard = useRef(false);
+
   function switchMode() {
     setRegister((v) => !v);
     setError("");
     setCreated("");
     setPassword("");
   }
+  
   async function submit(event) {
     event.preventDefault();
     if (guard.current) return;
