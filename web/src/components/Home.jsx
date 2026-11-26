@@ -12,6 +12,13 @@ export default function Home() {
     }
   }
 
+  function logout() {
+    sessionStorage.removeItem("rende-session");
+    setSession(null);
+    setNotice("");
+    setCreatedNumber(null);
+  }
+
   const [session, setSession] = useState(storedSession),
     [notice, setNotice] = useState(""),
     [createdNumber, setCreatedNumber] = useState(null);
