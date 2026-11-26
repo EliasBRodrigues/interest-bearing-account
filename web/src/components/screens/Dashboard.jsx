@@ -18,6 +18,7 @@ const date = (value) =>
 
 export default function Dashboard({ session, onLogout, createdNumber }) {
   const toast = useRef(null);
+  const [balance, setBalance] = useState(null);
   const [kind, setKind] = useState(null);
 
   function success() {
@@ -95,11 +96,15 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
               <Button
                 label="Depositar"
                 icon="pi pi-plus"
+                onClick={() => setKind("depositos")}
+                disabled={!balance}
               />
               <Button
                 label="Sacar"
                 icon="pi pi-minus"
+                onClick={() => setKind("saques")}
                 outlined
+                disabled={!balance}
               />
             </div>
           </section>
