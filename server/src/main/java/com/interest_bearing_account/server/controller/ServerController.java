@@ -4,6 +4,7 @@ import com.interest_bearing_account.server.domain.auth.AuthService;
 import com.interest_bearing_account.server.exception.ApiException;
 import com.interest_bearing_account.server.domain.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -21,6 +22,12 @@ public class ServerController {
     @PostMapping("/auth/login")
     public AuthService.Login login(@RequestBody(required = false) Map<String, Object> body) {
         return auth.login(body);
+    }
+
+    @PostMapping("/contas")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AuthService.Created create(@RequestBody(required = false) Map<String, Object> body) {
+        return auth.create(body);
     }
 
     @GetMapping("/contas/{id}/saldo")
