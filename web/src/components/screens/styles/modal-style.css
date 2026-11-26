@@ -1,0 +1,45 @@
+
+.movement-dialog {
+  width: min(460px, calc(100vw - 32px));
+  border-radius: 16px;
+}
+.movement-dialog .p-dialog-header {
+  border-radius: 16px 16px 0 0;
+}
+.movement-dialog .p-dialog-content {
+  border-radius: 0 0 16px 16px;
+}
+.movement-dialog .muted {
+  font-size: 0.9rem;
+}
+.money-input {
+  display: flex;
+  align-items: center;
+  border: 1px solid #ccd8d5;
+  border-radius: 9px;
+  padding-left: 16px;
+  color: #79928a;
+  background: white;
+}
+.money-input .p-inputtext {
+  border: 0;
+  background: transparent;
+  font-size: 1.6rem;
+  letter-spacing: -0.5px;
+}
+.money-input:focus-within {
+  outline: 2px solid #146c6030;
+  border-color: #146c60;
+}
+.money-input .p-inputtext:focus {
+  box-shadow: none;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 16px;
+}
+.dialog-actions .p-button[type="submit"] {
+  margin-top: 0;
+}
