@@ -4,6 +4,7 @@ import { InputText } from "primereact/inputtext";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { api } from "../../utils/api";
+import './styles/modal-style.css';
 
 export default function MovementDialog({ kind, session, onClose, onSuccess }) {
   const 

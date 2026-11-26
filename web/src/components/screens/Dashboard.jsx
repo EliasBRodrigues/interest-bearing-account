@@ -1,6 +1,7 @@
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
+import './styles/dash-style.css';
 
 export default function Dashboard({ session, onLogout, createdNumber }) {
 

@@ -4,6 +4,7 @@ import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { api } from "../../utils/api";
+import './style.css';
 
 export default function AuthForm({ onLogin, notice }) {
   const [register, setRegister] = useState(false),
