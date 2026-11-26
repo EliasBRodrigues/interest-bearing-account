@@ -1,19 +1,27 @@
 package com.interest_bearing_account.server.controller;
 
+import com.interest_bearing_account.server.domain.auth.AuthService;
 import com.interest_bearing_account.server.exception.ApiException;
-import com.interest_bearing_account.server.service.AccountService;
+import com.interest_bearing_account.server.domain.AccountService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.util.Map;
 
 @RestController
 public class ServerController {
 
     @Autowired
+    private AuthService auth;
+
+    @Autowired
     private AccountService accounts;
+
+    @PostMapping("/auth/login")
+    public AuthService.Login login(@RequestBody(required = false) Map<String, Object> body) {
+        return auth.login(body);
+    }
 
     @GetMapping("/contas/{id}/saldo")
     public AccountService.Balance balance(@PathVariable String id, Principal principal) {
