@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
@@ -18,6 +18,17 @@ const date = (value) =>
 
 export default function Dashboard({ session, onLogout, createdNumber }) {
   const toast = useRef(null);
+  const [kind, setKind] = useState(null);
+
+  function success() {
+    setKind(null);
+    toast.current?.show({
+      severity: "success",
+      summary: "Movimentação concluída",
+      detail: "O saldo e o extrato estão sendo atualizados.",
+      life: 4500,
+    });
+  }
 
   return (
     <>
@@ -110,6 +121,15 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
           <span>Conta remunerada</span>
         </footer>
       </main>
+      {kind && (
+        <MovementDialog
+          key={kind}
+          kind={kind}
+          session={session}
+          onClose={() => setKind(null)}
+          onSuccess={success}
+        />
+      )}
     </>
   );
 }
