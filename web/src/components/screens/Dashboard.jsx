@@ -1,7 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
+import { Skeleton } from "primereact/skeleton";
 import './styles/dash-style.css';
 
 const date = (value) =>
@@ -17,9 +18,59 @@ const date = (value) =>
 };
 
 export default function Dashboard({ session, onLogout, createdNumber }) {
-  const toast = useRef(null);
-  const [balance, setBalance] = useState(null);
-  const [kind, setKind] = useState(null);
+  
+  const [balance, setBalance] = useState(null),
+    [statement, setStatement] = useState({ content: [], totalElements: 0 });
+  
+  const [page, setPage] = useState(0),
+    [size, setSize] = useState(20),
+    [loading, setLoading] = useState(true),
+    [error, setError] = useState("");
+  
+  const [kind, setKind] = useState(null),
+    [updated, setUpdated] = useState(null);
+  
+  const toast = useRef(null),
+    requestId = useRef(0),
+    controller = useRef(null);
+  
+  const refresh = useCallback(
+    async (silent = false) => {
+      const id = ++requestId.current;
+      controller.current?.abort();
+      controller.current = new AbortController();
+      if (!silent) setLoading(true);
+      try {
+        const [nextBalance, nextStatement] = await Promise.all([
+          api.balance(session, controller.current.signal),
+          api.statement(session, page, size, controller.current.signal),
+        ]);
+        if (id !== requestId.current) return;
+        setBalance(nextBalance);
+        setStatement(nextStatement);
+        setUpdated(new Date());
+        setError("");
+      } catch (e) {
+        if (e.name !== "AbortError" && id === requestId.current)
+          setError(e.message);
+      } finally {
+        if (id === requestId.current) setLoading(false);
+      }
+    },
+    [session, page, size],
+  );
+
+  useEffect(() => {
+    refresh();
+    const timer = setInterval(() => {
+      if (document.visibilityState === "visible") refresh(true);
+    }, 30000);
+    return () => {
+      clearInterval(timer);
+      requestId.current++;
+      controller.current?.abort();
+    };
+  }, [refresh]);
 
   function success() {
     setKind(null);
@@ -29,6 +80,7 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
       detail: "O saldo e o extrato estão sendo atualizados.",
       life: 4500,
     });
+    refresh();
   }
 
   return (
@@ -58,19 +110,35 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
           <div>
             <div className="eyebrow">MINHA CONTA</div>
             <h1>
-              Olá, {"bem-vindo"}
+              Olá, {balance?.titular || "bem-vindo"}
               <span className="heading-dot">.</span>
             </h1>
-            <p className="muted">
-              Seu saldo e seus movimentos, sempre por perto.
-            </p>
           </div>
           <Button
             label="Atualizar"
             icon="pi pi-refresh"
             outlined
+            onClick={() => refresh()}
+            loading={loading}
           />
         </div>
+         {createdNumber && (
+          <div className="welcome-message" role="status">
+            <Message
+              severity="success"
+              text={
+                "Sua conta foi criada! Anote seu número: " +
+                createdNumber +
+                ". O acesso já foi realizado."
+              }
+            />
+          </div>
+        )}
+        {error && (
+          <div className="welcome-message" role="alert">
+            <Message severity="error" text={error} />
+          </div>
+        )}
         <div className="account-grid">
           <section className="balance-card" aria-label="Saldo da conta">
             <div className="balance-top">
@@ -78,6 +146,11 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
               <i className="pi pi-wallet" />
             </div>
             <div className="balance-value" aria-live="polite">
+               {balance ? (
+                money(balance.saldo)
+              ) : (
+                <Skeleton width="75%" height="3rem" />
+              )}
             </div>
             <div className="balance-bottom">
               <span>
