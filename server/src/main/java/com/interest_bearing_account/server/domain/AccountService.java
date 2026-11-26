@@ -1,4 +1,4 @@
-package com.interest_bearing_account.server.service;
+package com.interest_bearing_account.server.domain;
 
 
 import com.interest_bearing_account.server.entity.Account;
