@@ -1,12 +1,27 @@
+import { useRef } from "react";
 import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
 import './styles/dash-style.css';
 
+const date = (value) =>
+  new Intl.DateTimeFormat("pt-BR", {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(value));
+
+  const types = {
+  DEPOSITO: { label: "Depósito", icon: "pi-plus", severity: "info" },
+  SAQUE: { label: "Saque", icon: "pi-minus", severity: "secondary" },
+  JUROS: { label: "Rendimento", icon: "pi-percentage", severity: "success" },
+};
+
 export default function Dashboard({ session, onLogout, createdNumber }) {
+  const toast = useRef(null);
 
   return (
     <>
+      <Toast ref={toast} />
       <header className="topbar">
         <div className="container header-inner">
           <a className="brand light" href="/">
@@ -20,6 +35,7 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
               label="Sair"
               icon="pi pi-sign-out"
               text
+              onClick={onLogout}
               className="logout"
             />
           </div>
