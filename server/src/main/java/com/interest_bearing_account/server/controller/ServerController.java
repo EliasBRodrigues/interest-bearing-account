@@ -36,6 +36,17 @@ public class ServerController {
         return accounts.balance(id);
     }
 
+    @GetMapping("/contas/{id}/extrato")
+    public AccountService.Statement statement(
+            @PathVariable String id,
+            Principal principal,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        own(id, principal);
+        return accounts.statement(id, page, size);
+    }
+
+
     private void own(String id, Principal principal) {
         if (!id.equals(principal.getName()))
             throw new ApiException(403, "ACESSO_NEGADO", "Você só pode acessar a sua própria conta.");
