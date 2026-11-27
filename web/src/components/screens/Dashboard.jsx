@@ -3,6 +3,8 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
 import { Skeleton } from "primereact/skeleton";
+import { api } from "../../utils/api";
+import { formatMoney as money } from "../../utils/format";
 import './styles/dash-style.css';
 
 const date = (value) =>
@@ -43,7 +45,7 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
       try {
         const [nextBalance, nextStatement] = await Promise.all([
           api.balance(session, controller.current.signal),
-          api.statement(session, page, size, controller.current.signal),
+          // api.statement(session, page, size, controller.current.signal),
         ]);
         if (id !== requestId.current) return;
         setBalance(nextBalance);
