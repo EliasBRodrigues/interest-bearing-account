@@ -39,10 +39,9 @@ public class SecurityConfig {
                 .requestCache(c -> c.disable())
                 .authorizeHttpRequests(
                         c ->
-                                c.requestMatchers(HttpMethod.POST, "/contas", "/auth/login")
-                                        .permitAll()
-                                        .requestMatchers("/contas/**")
-                                        .authenticated()
+                                c.requestMatchers(HttpMethod.POST, "/contas", "/auth/login").permitAll()
+                                        .requestMatchers("/taxa").permitAll()
+                                        .requestMatchers("/contas/**").authenticated()
                                         .anyRequest()
                                         .denyAll())
                 .exceptionHandling(
