@@ -56,6 +56,15 @@ public class ServerController {
         return accounts.move(id, body == null ? null : body.get("valor"), false);
     }
 
+    @PostMapping("/contas/{id}/saques")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountService.Balance withdraw(
+            @PathVariable String id,
+            Principal principal,
+            @RequestBody(required = false) Map<String, Object> body) {
+        own(id, principal);
+        return accounts.move(id, body == null ? null : body.get("valor"), true);
+    }
 
     private void own(String id, Principal principal) {
         if (!id.equals(principal.getName()))
