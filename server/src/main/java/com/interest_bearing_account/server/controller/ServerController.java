@@ -1,5 +1,7 @@
 package com.interest_bearing_account.server.controller;
 
+import com.interest_bearing_account.server.domain.ClosingService;
+import com.interest_bearing_account.server.domain.RateService;
 import com.interest_bearing_account.server.domain.auth.AuthService;
 import com.interest_bearing_account.server.exception.ApiException;
 import com.interest_bearing_account.server.domain.AccountService;
@@ -8,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalDate;
 import java.util.Map;
 
 @RestController
@@ -18,6 +21,12 @@ public class ServerController {
 
     @Autowired
     private AccountService accounts;
+
+    @Autowired
+    private RateService rateService;
+
+    @Autowired
+    private ClosingService closingService;
 
     @PostMapping("/auth/login")
     public AuthService.Login login(@RequestBody(required = false) Map<String, Object> body) {
@@ -65,6 +74,18 @@ public class ServerController {
         own(id, principal);
         return accounts.move(id, body == null ? null : body.get("valor"), true);
     }
+
+    //
+    @GetMapping("/taxa")
+    public RateService.Rate rate() {
+        return rateService.get();
+    }
+
+    @GetMapping("/fechamentos/{data}")
+    public ClosingService.Closing closing(@PathVariable LocalDate data) {
+        return closingService.get(data);
+    }
+
 
     private void own(String id, Principal principal) {
         if (!id.equals(principal.getName()))
