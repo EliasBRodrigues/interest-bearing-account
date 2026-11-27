@@ -46,6 +46,16 @@ public class ServerController {
         return accounts.statement(id, page, size);
     }
 
+    @PostMapping("/contas/{id}/depositos")
+    @ResponseStatus(HttpStatus.CREATED)
+    public AccountService.Balance deposit(
+            @PathVariable String id,
+            Principal principal,
+            @RequestBody(required = false) Map<String, Object> body) {
+        own(id, principal);
+        return accounts.move(id, body == null ? null : body.get("valor"), false);
+    }
+
 
     private void own(String id, Principal principal) {
         if (!id.equals(principal.getName()))

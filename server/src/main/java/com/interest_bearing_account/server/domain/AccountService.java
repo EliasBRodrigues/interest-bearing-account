@@ -2,6 +2,8 @@ package com.interest_bearing_account.server.domain;
 
 
 import com.interest_bearing_account.server.entity.Account;
+import com.interest_bearing_account.server.entity.LedgerEntry;
+import com.interest_bearing_account.server.entity.utils.Money;
 import com.interest_bearing_account.server.exception.ApiException;
 import com.interest_bearing_account.server.repository.AccountRepository;
 import com.interest_bearing_account.server.repository.EntryRepository;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Clock;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -23,6 +27,12 @@ public class AccountService {
 
     @Autowired
     private EntryRepository entries;
+
+    private final Clock clock;
+
+    public AccountService(Clock clock) {
+        this.clock = clock;
+    }
 
     public record Entry(long id, String tipo, OffsetDateTime dataHora, String valor) {}
 
@@ -54,6 +64,24 @@ public class AccountService {
                                                 e.getDataHora(),
                                                 e.getValor().toPlainString())).toList();
         return new Statement(rows, page, size, result.getTotalElements());
+    }
+
+
+    @Transactional
+    public Balance move(String id, Object rawValue, boolean withdrawal) {
+        BigDecimal value = Money.parse(rawValue);
+        Account account = accounts.findLockedById(id).orElseThrow(this::missing);
+        if (withdrawal && account.getSaldo().compareTo(value) < 0)
+            throw new ApiException(
+                    422, "SALDO_INSUFICIENTE", "Seu saldo é insuficiente para este saque.");
+        BigDecimal signed = withdrawal ? value.negate() : value;
+        BigDecimal next = account.getSaldo().add(signed);
+        Money.checkBalance(next);
+        account.changeBalance(next);
+        entries.save(
+                new LedgerEntry(
+                        account, withdrawal ? "SAQUE" : "DEPOSITO", signed, OffsetDateTime.now(clock), null));
+        return view(account);
     }
 
     private Balance view(Account a) {

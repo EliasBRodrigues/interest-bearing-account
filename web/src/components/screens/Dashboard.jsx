@@ -3,8 +3,12 @@ import { Button } from "primereact/button";
 import { Message } from "primereact/message";
 import { Toast } from "primereact/toast";
 import { Skeleton } from "primereact/skeleton";
+import { DataTable } from "primereact/datatable";
+import { Tag } from "primereact/tag";
+import { Column } from "primereact/column";
 import { api } from "../../utils/api";
 import { formatMoney as money } from "../../utils/format";
+import MovementDialog from "../screens/MovementDialog";
 import './styles/dash-style.css';
 
 const date = (value) =>
@@ -188,11 +192,87 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
           <div className="statement-heading">
             <div>
               <h2 id="statement-title">Extrato da conta</h2>
+              <p className="muted">
+                Cada depósito, saque e rendimento em um só lugar.
+              </p>
             </div>
+            <span className="entry-count">
+              {statement.totalElements} lançamento
+              {statement.totalElements === 1 ? "" : "s"}
+            </span>
           </div>
-          <div className="statement-foot">
+          <DataTable
+            value={statement.content}
+            dataKey="id"
+            lazy
+            paginator
+            rows={size}
+            first={page * size}
+            totalRecords={statement.totalElements}
+            rowsPerPageOptions={[10, 20, 50, 100]}
+            onPage={(e) => {
+              setPage(e.page);
+              setSize(e.rows);
+            }}
+            loading={loading}
+            paginatorTemplate="PrevPageLink PageLinks NextPageLink RowsPerPageDropdown"
+            emptyMessage={
+              <div className="empty-state">
+                <i className="pi pi-inbox" />
+                <h3>Seu extrato começa aqui</h3>
+                <p>Faça seu primeiro depósito para começar.</p>
+              </div>
+            }
+            tableStyle={{ minWidth: "32rem" }}
+          >
+            <Column
+              field="tipo"
+              header="Movimentação"
+              body={(row) => {
+                const type = types[row.tipo] || types.DEPOSITO;
+                return (
+                  <div className="entry-type">
+                    <span className={"entry-icon " + row.tipo.toLowerCase()}>
+                      <i className={"pi " + type.icon} />
+                    </span>
+                    <Tag value={type.label} severity={type.severity} />
+                  </div>
+                );
+              }}
+            />
+            <Column
+              field="dataHora"
+              header="Data e hora"
+              body={(row) => (
+                <span className="entry-date">{date(row.dataHora)}</span>
+              )}
+            />
+            <Column
+              field="valor"
+              header="Valor"
+              align="right"
+              body={(row) => (
+                <span
+                  className={
+                    "entry-value " + (row.tipo === "SAQUE" ? "debit" : "credit")
+                  }
+                >
+                  {row.tipo === "SAQUE" ? "" : "+ "}
+                  {money(row.valor)}
+                </span>
+              )}
+            />
+          </DataTable>
+           <div className="statement-foot">
             <i className="pi pi-sync" />
             <span>
+              {updated
+                ? "Atualizado às " +
+                  updated.toLocaleTimeString("pt-BR", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "Carregando dados da conta"}
               . Atualização automática a cada 30 segundos.
             </span>
           </div>
