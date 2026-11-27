@@ -45,7 +45,7 @@ export default function Dashboard({ session, onLogout, createdNumber }) {
       try {
         const [nextBalance, nextStatement] = await Promise.all([
           api.balance(session, controller.current.signal),
-          // api.statement(session, page, size, controller.current.signal),
+          api.statement(session, page, size, controller.current.signal),
         ]);
         if (id !== requestId.current) return;
         setBalance(nextBalance);
